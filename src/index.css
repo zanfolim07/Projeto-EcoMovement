@@ -1,0 +1,98 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-brand: #1885DB;
+  --color-brand-dark: #1372CE;
+  --color-brand-soft: #E8F3FC;
+  --color-ink: #0f172a;
+  --color-copy: #424242;
+  --color-muted: #475569;
+  --color-line: #dbe7ef;
+  --color-surface: #f8fbfd;
+  --color-eco: #62D483;
+  --color-eco-dark: #4BC26E;
+  --color-eco-soft: #EAF9EF;
+  --color-soul: #5360FF;
+  --color-panel: #E6E8F0;
+  --font-sans: "Poppins", "Segoe UI", Arial, sans-serif;
+
+  --animate-page-enter: page-enter 0.35s ease both;
+  --animate-panel-in: panel-in 0.3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-fade-in: fade-in 0.2s ease both;
+
+  @keyframes page-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes panel-in {
+    from { opacity: 0; transform: translateX(24px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+}
+
+@utility bg-gradient-brand {
+  background-image: linear-gradient(90deg, #80D7DE 0%, #4CAEDD 13%, #1885DB 25%, #1B89DB 50%, #1372CE 100%);
+}
+
+@utility clip-hexagon {
+  clip-path: polygon(25% 4%, 75% 4%, 100% 50%, 75% 96%, 25% 96%, 0% 50%);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background-color: #ffffff;
+    font-family: var(--font-sans);
+    color: var(--color-copy);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  p {
+    margin-top: 0;
+  }
+
+  p,
+  li:not(:has(h1, h2, h3, h4)),
+  dd {
+    text-align: justify;
+  }
+
+  #root {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+  }
+
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-brand) 45%, transparent);
+    outline-offset: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
