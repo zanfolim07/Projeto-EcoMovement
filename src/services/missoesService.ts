@@ -1,106 +1,63 @@
-import { missoesIniciais, submissoesIniciais } from '../../data/missoes';
-import type { Missao, NovaSubmissao, Pontuacao, PosicaoRanking, ResumoPontos, StatusSubmissao, Submissao, UsuarioResumo } from '../../types';
-import { ErroApi, USUARIO_ID } from '../api';
+import type { Missao, NovaSubmissao, PosicaoRanking, ResumoPontos, StatusSubmissao, Submissao } from '../types';
+import { request, usandoApi, USUARIO_ID } from './api';
+import { missoesMock } from './mock/missoesMock';
 
-const missoes: Missao[] = missoesIniciais.map((missao) => ({ ...missao }));
-const submissoes: Submissao[] = submissoesIniciais.map((submissao) => ({ ...submissao }));
+export function listarMissoes(): Promise<Missao[]> {
+  if (!usandoApi) return missoesMock.listarMissoes();
+  return request<Missao[]>(`/missoes?usuarioId=${USUARIO_ID}`);
+}
 
-const outrosUsuarios: (UsuarioResumo & Pontuacao)[] = [
-  { usuarioId: 3, nome: 'Ana Souza', pontos: 170 },
-  { usuarioId: 4, nome: 'Bruno Lima', pontos: 140 },
-  { usuarioId: 5, nome: 'Carla Mendes', pontos: 110 },
-  { usuarioId: 6, nome: 'Diego Rocha', pontos: 80 },
-];
+export function buscarMissao(id: number): Promise<Missao> {
+  if (!usandoApi) return missoesMock.buscarMissao(id);
+  return request<Missao>(`/missoes/${id}?usuarioId=${USUARIO_ID}`);
+}
 
-export const missoesMock = {
-  async listarMissoes(): Promise<Missao[]> {
-    return [...missoes];
-  },
+export function listarSubmissoes(): Promise<Submissao[]> {
+  if (!usandoApi) return missoesMock.listarSubmissoes();
+  return request<Submissao[]>(`/usuarios/${USUARIO_ID}/submissoes`);
+}
 
-  async buscarMissao(id: number): Promise<Missao> {
-    const missao = missoes.find((item) => item.id === id);
-    if (!missao) throw new ErroApi(`Missão ${id} não encontrada.`, 404);
-    return { ...missao };
-  },
+export function buscarPontos(): Promise<ResumoPontos> {
+  if (!usandoApi) return missoesMock.buscarPontos();
+  return request<ResumoPontos>(`/usuarios/${USUARIO_ID}/pontos`);
+}
 
-  async listarSubmissoes(): Promise<Submissao[]> {
-    return [...submissoes];
-  },
+export function listarRanking(): Promise<PosicaoRanking[]> {
+  if (!usandoApi) return missoesMock.listarRanking();
+  return request<PosicaoRanking[]>('/ranking');
+}
 
-  async buscarPontos(): Promise<ResumoPontos> {
-    let total = 0;
-    for (const submissao of submissoes) {
-      if (submissao.status === 'APROVADA') total += submissao.pontos;
-    }
-    return { total };
-  },
+export function enviarSubmissao(nova: NovaSubmissao): Promise<Submissao> {
+  if (!usandoApi) return missoesMock.enviarSubmissao(nova);
 
-  async listarRanking(): Promise<PosicaoRanking[]> {
-    const { total } = await missoesMock.buscarPontos();
-    const usuarios = [...outrosUsuarios, { usuarioId: Number(USUARIO_ID), nome: 'Usuário Demo', pontos: total }];
-    usuarios.sort((a, b) => b.pontos - a.pontos || a.nome.localeCompare(b.nome));
+  const formulario = new FormData();
+  formulario.append('usuarioId', USUARIO_ID);
+  formulario.append('missaoId', String(nova.missaoId));
+  formulario.append('tipoEvidencia', nova.tipoEvidencia);
+  if (nova.duracaoSegundos !== undefined) {
+    formulario.append('duracaoSegundos', String(nova.duracaoSegundos));
+  }
+  formulario.append('arquivo', nova.arquivo);
 
-    const ranking: PosicaoRanking[] = [];
-    usuarios.forEach((usuario, indice) => {
-      const anterior = ranking[indice - 1];
-      const posicao = anterior && anterior.pontos === usuario.pontos ? anterior.posicao : indice + 1;
-      ranking.push({ ...usuario, posicao });
-    });
-    return ranking;
-  },
+  return request<Submissao>('/submissoes', { method: 'POST', body: formulario });
+}
 
-  async enviarSubmissao(nova: NovaSubmissao): Promise<Submissao> {
-    const missao = missoes.find((item) => item.id === nova.missaoId);
-    if (!missao) throw new Error('Missão não encontrada.');
+export function listarSubmissoesPorStatus(status?: StatusSubmissao): Promise<Submissao[]> {
+  if (!usandoApi) return missoesMock.listarSubmissoesPorStatus(status);
+  return request<Submissao[]>(`/submissoes${status ? `?status=${status}` : ''}`);
+}
 
-    missao.progresso = missao.meta;
-    missao.status = 'EM_ANALISE';
+export function avaliarSubmissao(id: number, decisao: 'aprovar' | 'rejeitar'): Promise<Submissao> {
+  if (!usandoApi) return missoesMock.avaliarSubmissao(id, decisao);
+  return request<Submissao>(`/submissoes/${id}/${decisao}`, { method: 'PUT' });
+}
 
-    const submissao: Submissao = {
-      id: submissoes.length + 1,
-      missaoId: missao.id,
-      titulo: missao.titulo,
-      pontos: missao.pontos,
-      status: 'EM_ANALISE',
-      duracaoSegundos: nova.duracaoSegundos,
-      enviadaEm: new Date().toISOString(),
-    };
-    submissoes.push(submissao);
+export function excluirSubmissao(id: number): Promise<void> {
+  if (!usandoApi) return missoesMock.excluirSubmissao(id);
+  return request<void>(`/submissoes/${id}`, { method: 'DELETE' });
+}
 
-    return submissao;
-  },
-
-  async listarSubmissoesPorStatus(status?: StatusSubmissao): Promise<Submissao[]> {
-    return submissoes.filter((submissao) => !status || submissao.status === status);
-  },
-
-  async avaliarSubmissao(id: number, decisao: 'aprovar' | 'rejeitar'): Promise<Submissao> {
-    const submissao = submissoes.find((item) => item.id === id);
-    if (!submissao) throw new Error('Submissão não encontrada.');
-
-    submissao.status = decisao === 'aprovar' ? 'APROVADA' : 'REJEITADA';
-    submissao.concluidaEm = new Date().toISOString();
-
-    const missao = missoes.find((item) => item.id === submissao.missaoId);
-    if (missao) missao.status = decisao === 'aprovar' ? 'CONCLUIDA' : 'DISPONIVEL';
-
-    return submissao;
-  },
-
-  async excluirSubmissao(id: number): Promise<void> {
-    const indice = submissoes.findIndex((item) => item.id === id);
-    if (indice === -1) throw new Error('Submissão não encontrada.');
-
-    const [removida] = submissoes.splice(indice, 1);
-    const missao = missoes.find((item) => item.id === removida.missaoId);
-    if (missao && missao.tipoEvidencia !== 'AUTOMATICA') {
-      missao.status = 'DISPONIVEL';
-      missao.progresso = 0;
-    }
-  },
-
-  async reiniciarTeste(): Promise<void> {
-    missoes.splice(0, missoes.length, ...missoesIniciais.map((missao) => ({ ...missao })));
-    submissoes.splice(0, submissoes.length, ...submissoesIniciais.map((submissao) => ({ ...submissao })));
-  },
-};
+export function reiniciarTeste(): Promise<void> {
+  if (!usandoApi) return missoesMock.reiniciarTeste();
+  return request<void>(`/usuarios/${USUARIO_ID}/submissoes`, { method: 'DELETE' });
+}
