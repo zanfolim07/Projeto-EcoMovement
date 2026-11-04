@@ -1,6 +1,6 @@
-import { missoesIniciais, submissoesIniciais } from '../../data/missoes';
+import { missoesIniciais, submissoesIniciais } from '../data/missoes';
 import type { Missao, NovaSubmissao, Pontuacao, PosicaoRanking, ResumoPontos, StatusSubmissao, Submissao, UsuarioResumo } from '../../types';
-import { ErroApi, USUARIO_ID } from '../api';
+import { ErroApi, USUARIO_ID } from './api';
 
 const missoes: Missao[] = missoesIniciais.map((missao) => ({ ...missao }));
 const submissoes: Submissao[] = submissoesIniciais.map((submissao) => ({ ...submissao }));
