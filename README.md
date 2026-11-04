@@ -19,7 +19,7 @@ Projeto desenvolvido para a disciplina de **Front-End Design Engineering** (FIAP
 | Vídeo de apresentação (YouTube) | _adicionar link do vídeo_ |
 | Aplicação na Vercel | https://projetoecomovement.vercel.app |
 | API Java (publicada) | https://ecomovement-api.onrender.com |
-| Repositório da API Java | _adicionar link do repositório da API_ |
+| Repositório da API Java | https://github.com/FabioCAlmeida/EcoMovement-API |
 
 ### Fazendo uma missão
 
