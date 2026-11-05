@@ -16,7 +16,7 @@ Projeto desenvolvido para a disciplina de **Front-End Design Engineering** (FIAP
 | | Link |
 |---|---|
 | Repositório no GitHub | https://github.com/zanfolim07/Projeto-EcoMovement |
-| Vídeo de apresentação (YouTube) | _adicionar link do vídeo_ |
+| Vídeo de apresentação (YouTube) | https://youtu.be/dkcB-GoxrqI |
 | Aplicação na Vercel | https://projetoecomovement.vercel.app |
 | API Java (publicada) | https://ecomovement-api.onrender.com |
 | Repositório da API Java | https://github.com/FabioCAlmeida/EcoMovement-API |
@@ -241,6 +241,5 @@ Projeto acadêmico desenvolvido na FIAP em parceria com a SoulUp (Prospera).
 ## Contato
 
 - **Formulário:** página **Contato** da aplicação (`/contato`), que salva a mensagem no banco pela API.
-- **E-mail da equipe:** _adicionar e-mail de contato_
 - **GitHub do projeto:** https://github.com/zanfolim07/Projeto-EcoMovement
 - **Integrantes:** links de GitHub e LinkedIn de cada um na tabela de [Autores e créditos](#autores-e-créditos).
